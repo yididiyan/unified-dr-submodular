@@ -1,6 +1,6 @@
 ## unified-dr-submodular
-This repository contains implementation for "Pedramfar M, Nadew YY, Quinn CJ, Aggarwal V. **A Unified Approach for Online Continuous DR-Submodular Maximization**. In The Twelfth International Conference on Learning Representations 2023 Oct 13".
-
+This repository contains implementation for "Pedramfar M, Nadew YY, Quinn CJ, Aggarwal V. Unified Projection-Free Algorithms for Adversarial DR-Submodular Optimization. To appear in The Twelfth International Conference on Learning Representations (ICLR 2024)". 
+A preprint is available at [arXiv](https://arxiv.org/abs/2403.10063).
 
 ## Setting up virtual environment using conda 
 Install Python 3.8.10 using conda 
