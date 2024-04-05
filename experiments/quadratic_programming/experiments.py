@@ -205,10 +205,16 @@ if __name__ == '__main__':
     import pickle
     import time
 
+    DEFAULT_SEEDS = list(range(1, 11))
+    DEFAULT_Ts = [20, 40, 80, 160, 320, 500]
+    stochastic = False
+
     parser = argparse.ArgumentParser('argument ')
     parser.add_argument('--output-dir', action='store', type=str, default='output' )
-    parser.add_argument('--seed', action='store', type=int, default=1888)
-    parser.add_argument('--T', action='store', type=int, default=100)
+
+    # parser.add_argument('--seed', action='store', type=int, default=None)
+    # parser.add_argument('--T', action='store', type=int, default=None)
+    #
     parser.add_argument('--alg', action='store', type=str, default=None)
     parser.add_argument('--beta', action='store', type=float, default=3/2)
     parser.add_argument('--gmfw-beta', action='store', type=float, default=0.)
@@ -220,114 +226,120 @@ if __name__ == '__main__':
     parser.add_argument('--t-init', action='store', type=int, default=None)
 
 
+    ## running batches together
+    parser.add_argument('--Ts', action='store', nargs='+', type=int, default=DEFAULT_Ts)
+    parser.add_argument('--seeds', action='store',  nargs='+', type=int, default=DEFAULT_SEEDS)
+
     args = parser.parse_args()
 
-    seed = args.seed
-
-    np.random.seed(seed)
-
-
-
-
-    stochastic = False
-    T = args.T #200
+    seeds = args.seeds
 
     N = [ 25, 40, 50]
     M = [ 15, 20, 50]
 
 
-    y_lims = [(-1, 16), (-2, 35), (-5, 40), (-5, 40)]
+    Ts = args.Ts
 
-    alg_options = [
-        ('gmfw', 0, 'GMFW(0)'),
-        ('gmfw', 1 / 4, 'GMFW(1/4)'),
-        ('gmfw', 1 / 2, 'GMFW(1/2)'),
-        ('sbfw', None, 'SBFW'),
-    ]
+    for T in Ts:
 
-    ## filter algs 
-    if args.alg is not None:
-        alg_options = [ a for a in alg_options if a[0] == args.alg]
+        for seed in seeds:
+            print(f'Working on T ={T} -- with seed {seed}')
+            np.random.seed(seed)
 
 
-    for y_lim, n,m in zip(y_lims, N, M):
-        print(n, m, 'N M')
-        q = QuadraticExperiment(
-            n,
-            m,
-            T,
-            alg=args.alg,
-            beta=args.beta,
-            gmfw_beta=args.gmfw_beta,
-            gmfw_L=args.gmfw_L,
-            grad_noise=args.grad_noise,
-            h_scale=args.h_scale,
-            include_trajectory=args.trajectory,
-            construction_type=args.c_type,
-            t_init=1
-        )
 
-        q.offline_method()
+            y_lims = [(-1, 16), (-2, 35), (-5, 40), (-5, 40)]
 
-        plt.figure()
-        for alg_option in alg_options:
-            # update algorithm settings
-            q.alg = alg_option[0]
-            q.beta = q.gmfw_beta = alg_option[1]
+            alg_options = [
+                ('gmfw', 0, 'GMFW(0)'),
+                ('gmfw', 1 / 4, 'GMFW(1/4)'),
+                ('gmfw', 1 / 2, 'GMFW(1/2)'),
+                ('sbfw', None, 'SBFW'),
+            ]
+
+            ## filter algs
+            if args.alg is not None:
+                alg_options = [ a for a in alg_options if a[0] == args.alg]
 
 
-            # prepare output directory
-            output_dir = f'{args.output_dir}_{args.seed}/{args.T}/{alg_option[0]}'
+            for y_lim, n,m in zip(y_lims, N, M):
+                print(n, m, 'N M')
+                q = QuadraticExperiment(
+                    n,
+                    m,
+                    T,
+                    alg=args.alg,
+                    beta=args.beta,
+                    gmfw_beta=args.gmfw_beta,
+                    gmfw_L=args.gmfw_L,
+                    grad_noise=args.grad_noise,
+                    h_scale=args.h_scale,
+                    include_trajectory=args.trajectory,
+                    construction_type=args.c_type,
+                    t_init=1
+                )
 
-            if alg_option[0] == 'gmfw':
-                output_dir = f'{output_dir}/beta_{alg_option[1]}'
-            elif alg_option[0] == 'meta':
-                output_dir = f'{output_dir}/beta_{alg_option[1]}'
+                q.offline_method()
 
-            os.makedirs(output_dir, exist_ok=True)
-            # /prepare
-
-            print('Running online solver..')
-            start_time = time.time()
-            _, offline_values, online_values = q.run()
-            total_time = time.time() - start_time
-            print(f'Total time {total_time:.2f}')
+                plt.figure()
+                for alg_option in alg_options:
+                    # update algorithm settings
+                    q.alg = alg_option[0]
+                    q.beta = q.gmfw_beta = alg_option[1]
 
 
-            plt.plot(np.array(offline_values) - np.array(online_values), label=alg_option[2])
+                    # prepare output directory
+                    output_dir = f'{args.output_dir}_{seed}/{T}/{alg_option[0]}'
+
+                    if alg_option[0] == 'gmfw':
+                        output_dir = f'{output_dir}/beta_{alg_option[1]}'
+                    elif alg_option[0] == 'meta':
+                        output_dir = f'{output_dir}/beta_{alg_option[1]}'
+
+                    os.makedirs(output_dir, exist_ok=True)
+                    # /prepare
+
+                    print('Running online solver..')
+                    start_time = time.time()
+                    _, offline_values, online_values = q.run()
+                    total_time = time.time() - start_time
+                    print(f'Total time {total_time:.2f}')
 
 
-            plt.ylabel('1/e-regret/t')
-            plt.xlabel('Iteration index(t)')
+                    plt.plot(np.array(offline_values) - np.array(online_values), label=alg_option[2])
 
-            xticks = list(range(0, T+1, 25))
-            yticks = list(range(0, y_lim[1] + 3, 5))
 
-            plt.xticks(xticks, xticks)
-            plt.title(f'n={n}, m={m}, {total_time:.2f}')
-            plt.legend()
+                    plt.ylabel('1/e-regret/t')
+                    plt.xlabel('Iteration index(t)')
 
-            filename = f'{output_dir}/n_{n}__m_{m}_{("stochastic" if stochastic else "adversarial")}_{args.grad_noise}'
-            print(f'Saving results under ..{filename}')
-            plt.savefig(f'{filename}.png', bbox_inches="tight", dpi=300)
-            
+                    xticks = list(range(0, T+1, 25))
+                    yticks = list(range(0, y_lim[1] + 3, 5))
 
-            with open(f'{filename}.pkl', 'wb') as f_:
-                pickle.dump({
-                    'online_values': online_values,
-                    'offline_values': offline_values,
-                    'n': n,
-                    'm': m,
-                    'T': T,
-                    'alg': alg_option[0],
-                    'stochastic': stochastic,
-                    'gmfw_beta': alg_option[1],
-                    'beta': alg_option[1],
-                    'L': args.gmfw_L,
-                    'grad_noise': args.grad_noise,
-                    'h_scale': args.h_scale,
-                    'total_time': total_time,
-                    'c_type': args.c_type
-                }, f_)
+                    plt.xticks(xticks, xticks)
+                    plt.title(f'n={n}, m={m}, {total_time:.2f}')
+                    plt.legend()
 
-        plt.show()
+                    filename = f'{output_dir}/n_{n}__m_{m}_{("stochastic" if stochastic else "adversarial")}_{args.grad_noise}'
+                    print(f'Saving results under ..{filename}')
+                    plt.savefig(f'{filename}.png', bbox_inches="tight", dpi=300)
+
+
+                    with open(f'{filename}.pkl', 'wb') as f_:
+                        pickle.dump({
+                            'online_values': online_values,
+                            'offline_values': offline_values,
+                            'n': n,
+                            'm': m,
+                            'T': T,
+                            'alg': alg_option[0],
+                            'stochastic': stochastic,
+                            'gmfw_beta': alg_option[1],
+                            'beta': alg_option[1],
+                            'L': args.gmfw_L,
+                            'grad_noise': args.grad_noise,
+                            'h_scale': args.h_scale,
+                            'total_time': total_time,
+                            'c_type': args.c_type
+                        }, f_)
+
+                plt.show()

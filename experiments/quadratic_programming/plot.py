@@ -161,8 +161,15 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
 
+
+    DEFAULT_SEEDS = list(range(1, 11))
+    DEFAULT_Ts = [20, 40, 80, 160, 320, 500]
+
     parser = argparse.ArgumentParser('argument ')
     parser.add_argument('--output-dir', action='store', type=str, default='./')
+    parser.add_argument('--Ts', action='store', nargs='+', type=int, default=DEFAULT_Ts)
+    parser.add_argument('--seeds', action='store', nargs='+', type=int, default=DEFAULT_SEEDS)
+
     args = parser.parse_args()
 
     legend_font_size = 12
@@ -174,9 +181,9 @@ if __name__ == '__main__':
 
     os.makedirs(plots_dir, exist_ok=True)
 
-    T = [20, 40, 80, 160, 320, 500]
+    T = args.Ts
 
-    seeds = range(1, 11)
+    seeds = args.seeds
     grad_noise = 0.1  # 0.1
 
     color_choices = {
@@ -204,8 +211,8 @@ if __name__ == '__main__':
     n_m_pairs = [(25, 15), (40, 20), (50, 50)]
 
     # T for instantaneous plots
-    T_instant = 500
-    seeds = range(1, 11)
+    T_instant = T[-1]
+    seeds = seeds
 
     meta_t, mono_t, sbfw_t, gmfw_t, odc_t = load_averaged_data(
         output_dir=f'{root_dir}/output',

@@ -1,5 +1,5 @@
 ## unified-dr-submodular
-This repository contains implementation for Pedramfar M, Nadew YY, Quinn CJ, Aggarwal V. A Unified Approach for Online Continuous DR-Submodular Maximization. InThe Twelfth International Conference on Learning Representations 2023 Oct 13.
+This repository contains implementation for "Pedramfar M, Nadew YY, Quinn CJ, Aggarwal V. **A Unified Approach for Online Continuous DR-Submodular Maximization**. In The Twelfth International Conference on Learning Representations 2023 Oct 13".
 
 
 ## Setting up virtual environment using conda 
@@ -38,15 +38,23 @@ cd ./experiments/quadratic_programming
 ```
 
 #### GMFW and SMFW algorithms 
-The following will run the GMFW algorithms on 10 synthetic experiments with seeds 1 to 10. In the following commands, 0.1 is the noise scale. 
-```bash
-for i in {1..10}
-do 
-   bash run_gmfw.sh 0.1 $i;
-   bash run_gmfw.sh 0.1 $i;
-done
+The following will run the GMFW and SBFW algorithms on synthetic experiments with multiple seeds. In the following command, `h-scale` refers to the scale of the quadratic coefficients and, `grad-noise` is the scale of the normalized gradient noise.   
 
+```bash
+python experiments.py --Ts <time-horizons> --seeds <seeds> --h-scale 10. --grad-noise 0.1 
 ```
+
+### Plotting results 
+
+```bash 
+python plot.py --Ts <time-horizons>  --seeds <seeds>
+```
+
+This produces instantaneous and cumulative regret plot for the above experiments under `experiments/quadratic_programming/plots/`
+
+To reproduce the results in the paper(Figure 2), replace 
+`<time-horizons>` with `20 40 80 160 320 500` and `<seeds>` to `1 2 3 4 5 6 7 8 9 10`.  
+
 
 ### Acknowledgement
 
