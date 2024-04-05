@@ -1,6 +1,5 @@
 ## unified-dr-submodular
-
-This implementation is extended from experiments in "Zhang Q, Deng Z, Chen Z, Zhou K, Hu H, Yang Y. Online Learning for Non-monotone DR-Submodular Maximization: From Full Information to Bandit Feedback. International Conference on Artificial Intelligence and Statistics 2023 Apr 11 (pp. 3515-3537). PMLR."
+This repository contains implementation for Pedramfar M, Nadew YY, Quinn CJ, Aggarwal V. A Unified Approach for Online Continuous DR-Submodular Maximization. InThe Twelfth International Conference on Learning Representations 2023 Oct 13.
 
 
 ## Setting up virtual environment using conda 
@@ -49,3 +48,6 @@ done
 
 ```
 
+### Acknowledgement
+
+We thank authors of "Zhang Q, Deng Z, Chen Z, Zhou K, Hu H, Yang Y. Online Learning for Non-monotone DR-Submodular Maximization: From Full Information to Bandit Feedback. International Conference on Artificial Intelligence and Statistics 2023 Apr 11 (pp. 3515-3537). PMLR." for discussion and providing their implementation on parts of which this one is built.  
