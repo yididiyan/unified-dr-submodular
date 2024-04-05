@@ -52,7 +52,7 @@ python plot.py --Ts <time-horizons>  --seeds <seeds>
 
 This produces instantaneous and cumulative regret plot for the above experiments under `experiments/quadratic_programming/plots/`
 
-To reproduce the results in the paper(Figure 2), replace 
+To reproduce the results in the paper (Figure 2), replace 
 `<time-horizons>` with `20 40 80 160 320 500` and `<seeds>` to `1 2 3 4 5 6 7 8 9 10`.  
 
 
